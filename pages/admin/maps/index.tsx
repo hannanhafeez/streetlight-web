@@ -32,6 +32,7 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 			mapRef.current = new google.maps.Map(googlemap.current!, {
 				center: ISB_LAT_LONG,
 				zoom: 12,
+				mapId: '2c331c1a23562b1e',
 			});
 		}).then(()=>{
 
@@ -41,6 +42,7 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 					map: mapRef.current,
 					icon: icons[data.status.isOn ? 'on' : 'off'].icon,
 					title: data.status.powerReading,
+					
 					// label: data.status.powerReading,
 				})
 				markersRef.current?.push(marker);
@@ -151,14 +153,14 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 	)
 }
 
-const iconPath = '/imgs/'
+const iconPath = '/svg/'
 
 const icons: Record<string, { icon: string }> = {
 	on: {
-		icon: iconPath + "bulb-on.png",
+		icon: iconPath + "bulb-on.svg",
 	},
 	off: {
-		icon: iconPath + "bulb-off.png",
+		icon: iconPath + "bulb-off.svg",
 	},
 };
 
