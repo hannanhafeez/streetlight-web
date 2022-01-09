@@ -47,7 +47,7 @@ export default function Users({ user }: InferGetServerSidePropsType<typeof getSe
 
 
 							<form>
-							<div className="grid grid-cols-2 grid-flow-row gap-4">
+							<div className="grid xs:grid-cols-2 grid-flow-row gap-4">
 								<div className="form-control">
 									<label className="label">
 										<span className="label-text font-sans font-light text-base text-app_light_gray">

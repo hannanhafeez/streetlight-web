@@ -66,7 +66,7 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 							<div className="my-4 grid grid-cols-1 xs:grid-cols-2 gap-6">
 								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue ">
 									<div className="card-body p-4 lg:p-6">
-										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_blue">
+										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
 											Battery Percentage
 										</h4>
 
@@ -80,7 +80,7 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 								</div>
 								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue ">
 									<div className="card-body p-4 lg:p-6">
-										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_blue">
+										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
 											Signal Strength
 										</h4>
 
@@ -95,7 +95,7 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 								
 								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white ">
 									<div className="card-body p-4 lg:p-6">
-										{/* <h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_blue">
+										{/* <h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
 											Battery Percentage
 										</h4> */}
 
@@ -107,7 +107,7 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 								</div>
 								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white ">
 									<div className="card-body p-4 lg:p-6">
-										{/* <h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_blue">
+										{/* <h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
 											Signal Strength
 										</h4> */}
 

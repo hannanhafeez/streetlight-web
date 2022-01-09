@@ -13,7 +13,7 @@ const Logo: React.FC<Props> = ({ isCol=false, light= false }) => {
 
 			<h3 className={
 				(light
-				?`text-app_light_gray`
+				?`text-white`
 				:`text-app_gray opacity-30 `)
 				+ " text-center text-19 font-bold tracking-loose"
 			}>

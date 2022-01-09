@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+
 import { InferGetServerSidePropsType } from 'next'
 import Image from 'next/image'
 import AdminLayout from '../../../components/Layouts/admin'
@@ -6,12 +8,17 @@ import { withIronSessionSsr } from 'iron-session/next'
 import { sessionOptions } from '../../../lib/session'
 
 import { Loader, } from '@googlemaps/js-api-loader';
-import { useEffect, useRef } from 'react'
+
+const ISB_LAT_LONG = { lat: 33.7005, lng: 73.0505 }
 
 
 export default function Maps({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 	const googlemap = useRef<HTMLDivElement>(null);
 	const mapRef = useRef<google.maps.Map>();
+
+	const markersRef = useRef<[google.maps.Marker]|undefined>();
+
+	const [selectedIndex, setIndex] = useState<undefined|number>();
 
 	useEffect(() => {
 		if (!process.env.NEXT_PUBLIC_MAPS_API_KEY) return
@@ -23,19 +30,38 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 
 		loader.load().then(() => {
 			mapRef.current = new google.maps.Map(googlemap.current!, {
-				center: { lat: -34.397, lng: 150.644 },
-				zoom: 8,
+				center: ISB_LAT_LONG,
+				zoom: 12,
 			});
+		}).then(()=>{
+
+			deviceData.forEach(data=>{
+				const marker = new google.maps.Marker({
+					position: data.position,
+					map: mapRef.current,
+					icon: icons[data.status.isOn ? 'on' : 'off'].icon,
+					title: data.status.powerReading,
+					// label: data.status.powerReading,
+				})
+				markersRef.current?.push(marker);
+			})
+
 		});
 
-		setTimeout(()=>{
-			mapRef.current?.panTo({ lat: -35.397, lng: 151.644 })
-		}, 5000)
-	});
+		return ()=>{
+		}
+	}, []);
+
+
+	const onSelected = (ind:number) => {
+		mapRef.current?.setZoom(17.5);
+		mapRef.current?.panTo(deviceData[ind].position);
+		setIndex(ind);
+	}
 
 	return (
 		<AdminLayout title="Locations" user={user}>
-			<main className="w-full h-full flex flex-col items-stretch">
+			<main className="w-full h-full">
 
 				<div className="flex-1 mt-4 bg-white shadow rounded-md">
 					<div className="h-full drawer drawer-mobile drawer-end w-full">
@@ -59,15 +85,12 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 								</div>
 							</div>
 
-
-
-							
-							<div className="grid grid-flow-row gap-4 h-full  rounded-lg overflow-hidden">
+							{/* Map */}
+							<div className="grid grid-flow-row gap-4 h-full aspect-square xs:aspect-video rounded-lg overflow-hidden">
 								<div id="map" ref={googlemap} className="w-full h-full bg-gray-300" />
 							</div>
-
-
 							
+							{/* Info */}
 
 						</div>
 
@@ -94,11 +117,22 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 										</thead>
 										<tbody>
 											{
-												tableData.map(({ userName, devName }, ind) => (
-													<tr key={`${ind}-${userName}`} className="hover:cursor-pointer">
+												deviceData.map(({ userName, devName, status:{isOn} }, ind) => (
+													<tr key={`${ind}-${userName}`} className={`hover:cursor-pointer ${ind == selectedIndex ? 'bg-gray-100': 'bg-transparent'}`} 
+														onClick={()=>onSelected(ind)}
+													>
+														
 														{/* <th>1</th> */}
-														<td className="w-full">{devName}</td>
-														<td >{userName}</td>
+														
+														<td className="w-full bg-transparent">{devName}</td>
+														
+														<td className="bg-transparent">{userName}</td>
+														
+														<td className="w-full bg-transparent">
+															<div className={`badge mx-2 text-12 ${isOn ? 'bg-green-600' : 'bg-red-600'} border-none float-right`}>
+																{isOn ? 'ON' : 'OFF'}
+															</div>
+														</td>
 													</tr>
 												))
 											}
@@ -117,12 +151,68 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 	)
 }
 
-const tableData = [
-	{ devName: 'Device 1', userName: 'User 1' },
-	{ devName: 'Device 2', userName: 'User 3' },
-	{ devName: 'Device 3', userName: 'User 1' },
-	{ devName: 'Device 4', userName: 'User 2' },
-	{ devName: 'Device 5', userName: 'User 2' },
+const iconPath = '/imgs/'
+
+const icons: Record<string, { icon: string }> = {
+	on: {
+		icon: iconPath + "bulb-on.png",
+	},
+	off: {
+		icon: iconPath + "bulb-off.png",
+	},
+};
+
+const deviceData = [
+	{
+		devName: 'Device 1', userName: 'User 1',
+		location:{
+			sector: 'G-10/4', street: '43', gali: null,
+		},
+		status:{
+			isOn: false, powerReading: '0 Watts'
+		},
+		position: { lat: 33.677973, lng: 73.022232}
+	},
+	{
+		devName: 'Device 2', userName: 'User 1',
+		location:{
+			sector: 'G-10/4', street: '43', gali: null,
+		},
+		status:{
+			isOn: true, powerReading: '10 Watts'
+		},
+		position: { lat: 33.678503, lng: 73.023243}
+	},
+	{
+		devName: 'Device 3', userName: 'User 1',
+		location:{
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status:{
+			isOn: true, powerReading: '12 Watts'
+		},
+		position: { lat: 33.675600, lng: 73.024372}
+	},
+	{
+		devName: 'Device 4', userName: 'User 1',
+		location:{
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status:{
+			isOn: true, powerReading: '10 Watts'
+		},
+		position: { lat: 33.675251, lng: 73.023682}
+	},
+	{
+		devName: 'Device 5', userName: 'User 1',
+		location:{
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status:{
+			isOn: true, powerReading: '11 Watts'
+		},
+		position: { lat: 33.674749, lng: 73.022727}
+	},
 
 ]
 

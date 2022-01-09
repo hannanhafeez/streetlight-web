@@ -79,7 +79,7 @@ export default function Login() {
 
 						<input className={
 								"w-full rounded-md py-2 px-3 border border-gray-200 bg-bluish" + " " +
-								"focus:border-app_blue focus:outline-none" + " " +
+								"focus:border-app_primary focus:outline-none" + " " +
 								"font-sans text-14 placeholder-opacity-30 placeholder-app_gray" + " "
 							}
 							id="email" placeholder="Email address" type="email"
@@ -110,7 +110,7 @@ export default function Login() {
 									}
 								</div>
 							</div>
-							<input className="border rounded-md w-full py-2 px-3 border-gray-200 bg-bluish focus:outline-none focus:border-app_blue pr-16 font-sans text-14 placeholder-opacity-30 placeholder-app_gray"
+							<input className="border rounded-md w-full py-2 px-3 border-gray-200 bg-bluish focus:outline-none focus:border-app_primary pr-16 font-sans text-14 placeholder-opacity-30 placeholder-app_gray"
 								id="password" type={show ?"text": "password"} 
 								placeholder="Password"
 								autoComplete="off"
@@ -123,7 +123,7 @@ export default function Login() {
 
 					<div className="my-2.5 block">
 						<button className={
-								"px-3 py-3 w-full rounded-md bg-app_blue text-white font-sans text-14 font-semibold" + " " +
+								"px-3 py-3 w-full rounded-md bg-app_primary text-white font-sans text-14 font-semibold" + " " +
 								"tracking-loose shadow-md grid place-content-center"
 							}
 							type="submit"
@@ -143,7 +143,7 @@ export default function Login() {
 
 					<p className="text-app_light_gray text-14 font-sans text-center tracking-loose">
 						Don’t have an account? {' '}
-						<Link href="/admin/dashboard"><span className="text-app_blue">Sign up</span></Link>
+						<Link href="/admin/dashboard"><span className="text-app_primary">Sign up</span></Link>
 					</p>
 
 				</form>

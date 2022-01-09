@@ -24,7 +24,11 @@ module.exports = {
         '10': '10px',
         '11': '11px',
         '12': '12px',
+        '13': '13px',
         '14': '14px',
+        '15': '15px',
+        '16': '16px',
+        '17': '17px',
         '18': '18px',
         '19': '19px',
         '20': '20px',
@@ -37,8 +41,8 @@ module.exports = {
         loose: '0.3px'
       },
       outline: {
-        blue: ['1px solid #0000ff', '-1px'],
-        white: ['1px solid #ffffff', '-1px'],
+        // blue: ['1px solid #2aa79b', '-1px'],
+        // white: ['1px solid #ffffff', '-1px'],
       }
     },
   },
@@ -57,8 +61,8 @@ module.exports = {
           'secondary-focus': '#f3cc30',   /* Secondary color - focused */
           'secondary-content': '#ffffff', /* Foreground content color to use on secondary color */
 
-          'accent': '#37cdbe',            /* Accent color */
-          'accent-focus': '#2aa79b',      /* Accent color - focused */
+          'accent': '#2aa79b',            /* Accent color */
+          'accent-focus': '#37cdbe',      /* Accent color - focused */
           'accent-content': '#ffffff',    /* Foreground content color to use on accent color */
 
           'neutral': '#3d4451',           /* Neutral color */

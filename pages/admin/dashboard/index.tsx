@@ -24,9 +24,9 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 
 	return (
 		<AdminLayout title="Overview" user={user}>
-			<main className="w-full h-full flex flex-col items-stretch">
-				<div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 lg:items-start">
-					<Card title="Total Devices" value="7"/>
+			<main className="w-full h-full">
+				<div className="py-[1px] xs:py-2 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 lg:items-start">
+					<Card title="Total Lamps" value="7"/>
 					
 					<Card title="Active" value="2"/>
 					
@@ -35,16 +35,16 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 					<Card title="Issues" value="0"/>
 				</div>
 
-				<div className="flex-1 mt-4 bg-white shadow rounded-md">
+				<div className="flex-1 mt-2 bg-white shadow rounded-md">
 					<div className="h-full drawer drawer-mobile drawer-end w-full">
 						<input id="drawer-dashboard" type="checkbox" className="drawer-toggle" />
 						
 						<div className="flex flex-col items-stretch drawer-content px-4 pb-3">
 							{/* <label  className="mb-4 ">open menu</label> */}
 							
-							<div className="w-full flex flex-col py-3 sticky top-0 bg-white z-10">
+							<div className="self-stretch flex flex-col py-1 xs:py-3 px-6 -mx-4 sticky top-0 bg-white z-10 rounded-t-md">
 								<div className="label px-0 pb-1">
-									<span className="label-text font-semibold">Devices/Sensors</span>
+									<span className="label-text font-semibold text-18">Devices</span>
 									<label htmlFor="drawer-dashboard" className="lg:hidden hover:bg-gray-200 rounded p-1 text-gray-600 font-mono cursor-pointer grid object-center">
 										<Image src={'/svg/search.svg'} height={28} width={28} />
 									</label>
@@ -66,23 +66,23 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 							</div>
 
 							<div className="my-4 grid grid-cols-1 xs:grid-cols-2 gap-6">
-								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue ">
+								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue hover:shadow-2xl">
 									<div className="card-body p-4 lg:p-6">
-										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_blue">
+										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
 											Battery Percentage
 										</h4>
 
 										<CircularProgressbar value={80} text={`${80}%`} 
 											strokeWidth={5} styles={buildStyles({
-												pathColor: colors.app_blue, textColor: 'black'
+												pathColor: colors.app_primary, textColor: 'black'
 											})}
 											className="max-h-52 my-2"
 										/>
 									</div>
 								</div>
-								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue ">
+								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue hover:shadow-2xl">
 									<div className="card-body p-4 lg:p-6">
-										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_blue">
+										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
 											Signal Strength
 										</h4>
 
@@ -96,10 +96,11 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 								</div>
 							</div>
 
-							<div className="h-1 w-full bg-gray-500 m-2"/>
+							<div className="divider opacity-40"></div> 
 
 							<div className="h-full grid sm:grid-cols-2 xs:grid-cols-1 grid-flow-row gap-4">
-								<div className="form-control">
+								
+								{/* <div className="form-control">
 									<label className="label">
 										<span className="label-text font-sans font-light text-base text-app_light_gray">
 											Water level alert minimum value (in feet):
@@ -127,7 +128,7 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 										<option>4</option>
 										<option>5</option>
 									</select>
-								</div>
+								</div> */}
 								
 								<div className="form-control sm:col-span-2 xs:col-span-1">
 									<label className="label">
@@ -226,11 +227,11 @@ const chartData: Options = {
 		type: 'areaspline'
 	},
 	title: {
-		text: 'Water Table Elevation',
+		text: 'Power Overview',
 		style: {
 			fontSize: '16',
 			color: '#9FA2B4',
-			fontFamily: 'Mulish Light', 
+			fontFamily: 'Mulish Medium', 
 		}
 	},
 	legend: {
@@ -262,7 +263,7 @@ const chartData: Options = {
 	},
 	yAxis: {
 		title: {
-			text: 'Water level (m)',
+			text: 'Power consumption (Watts)',
 			style: {
 				color: '#9FA2B4'
 			}
@@ -277,19 +278,19 @@ const chartData: Options = {
 	},
 	plotOptions: {
 		areaspline: {
-			fillOpacity: 0.5
+			fillOpacity: 0.4
 		}
 	},
 	series: [{
 		type: 'areaspline',
-		name: 'Baro Corrected',
+		name: 'Active',
 		data: dataBaroCorrected
 	}, 
-	{
+	/* {
 		type: 'areaspline',
 		name: 'Uncorrected',
 		data: dataBaro
-	}
+	} */
 	]
 }
 

@@ -11,10 +11,10 @@ import SettingsSvg from '../../svg/settings'
 import UsersSvg from '../../svg/users'
 import { User } from '../../../pages/api/user'
 
-const activeClasses = " text-app_light bg-gray-600 border-l-2 "
-const linkHoverClasses = " hover:text-app_light hover:bg-gray-600 "
+const activeClasses = " text-app_light bg-blue-800 border-l-2 "
+const linkHoverClasses = " hover:text-app_light "
 
-const isActiveLink = (router: NextRouter, str: string) => router.asPath === `/admin/${str}` ? activeClasses : ''
+const isActiveLink = (router: NextRouter, str: string) => router.asPath === `/admin/${str}` ? activeClasses : ' hover:bg-gray-800 '
 const isActive = (router: NextRouter, str: string) => router.asPath === `/admin/${str}`
 
 type LayoutProps = {
@@ -31,7 +31,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 			<div className="flex flex-col items-center drawer-content bg-app_light">
 				{/* <label htmlFor="my-drawer-2" className ="mb-4 btn btn-primary drawer-button lg:hidden">open menu</label> */}
 
-				<header className="flex items-center w-full px-2 py-4">
+				<header className="flex items-center w-full px-2 py-2 xs:py-4">
 					<div className="flex-none flex lg:hidden">
 						<label className="btn btn-square btn-ghost" htmlFor="my-drawer-2">
 							<HamburgerSvg />
@@ -41,20 +41,20 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 					<Header title={title ?? 'Overview'} name={user?.user_type === 'admin' ? "Admin" : (user?.first_name + '' + user?.last_name)}/>
 				</header>
 
-				<div className="w-full h-full px-4 pb-2 overflow-y-scroll">
+				<div className="w-full h-full px-4 overflow-y-scroll">
 					{children}
 				</div>
 			</div>
-			<aside className="drawer-side">
+			<aside className="drawer-side ">
 				<label htmlFor="my-drawer-2" className="drawer-overlay"></label>
 				<ul className="menu py-4 overflow-y-auto w-56 bg-app_gray text-base-content">
 					<li className="px-4 py-2">
 						<Logo isCol={false} light={true} />
 					</li>
-					<li className="my-2 font-sans text-base tracking-loose text-app_light_gray">
+					<li className="my-2 font-sans text-base tracking-loose text-gray-300">
 						<ul className="p-0">
 							<li className={isActiveLink(router, "dashboard") + linkHoverClasses}>
-								<Link href="/admin/dashboard">
+								<Link href="/admin/dashboard" >
 									<a className="group">
 										{/* <Image src="/svg/dashboard.svg" width={20} height={20} /> */}
 										<DashboardSvg isActive={isActive(router, "dashboard")}/>
@@ -65,7 +65,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 								</Link>
 							</li>
 							<li className={isActiveLink(router, "maps") + linkHoverClasses}>
-								<Link href="/admin/maps">
+								<Link href="/admin/maps" >
 									<a className="group">
 										<MapsSvg isActive={isActive(router, "maps")} />
 										<span className="ml-4">
@@ -75,9 +75,9 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 								</Link>
 							</li>
 							<li className={isActiveLink(router, "users") + linkHoverClasses}>
-								<Link href="/admin/users">
+								<Link href="/admin/users" >
 									<a className="group">
-										<UsersSvg isActive={isActiveLink(router, "users")}/>
+										<UsersSvg isActive={isActive(router, "users")}/>
 										<span className="ml-4">
 											Users
 										</span>
@@ -88,9 +88,9 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 							<i className="block h-0.25 bg-white bg-opacity-10 my-2" />
 
 							<li className={isActiveLink(router, "settings") + linkHoverClasses}>
-								<Link href="/admin/settings">
+								<Link href="/admin/settings" >
 									<a className="group">
-										<SettingsSvg isActive={isActiveLink(router, "settings")} />
+										<SettingsSvg isActive={isActive(router, "settings")} />
 										<span className="ml-4">
 											Settings
 										</span>
