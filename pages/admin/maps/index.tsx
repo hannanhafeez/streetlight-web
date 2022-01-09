@@ -42,7 +42,7 @@ export default function Maps({ user }: InferGetServerSidePropsType<typeof getSer
 					map: mapRef.current,
 					icon: icons[data.status.isOn ? 'on' : 'off'].icon,
 					title: data.status.powerReading,
-					
+
 					// label: data.status.powerReading,
 				})
 				markersRef.current?.push(marker);

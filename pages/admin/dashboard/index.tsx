@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
+
 import AdminLayout from '../../../components/Layouts/admin'
 import Card from '../../../components/dashboard/card'
 import Image from 'next/image'
@@ -8,31 +10,123 @@ import Highcharts, {Options} from 'highcharts'
 import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsReact from 'highcharts-react-official'
 
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+// import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+// import 'react-circular-progressbar/dist/styles.css';
 
 import colors from '../../../constants/colors';
 import { withIronSessionSsr } from 'iron-session/next'
 import { User } from '../../api/user'
 import { sessionOptions } from '../../../lib/session'
+import { Loader } from '@googlemaps/js-api-loader'
 
 if (typeof Highcharts === 'object') {
 	HighchartsExporting(Highcharts)
 }
 
+const ISB_LAT_LONG = { lat: 33.7005, lng: 73.0505 }
+
+enum Filters {
+	all = 'all',
+	active = 'active',
+	offline = 'offline'
+}
+
 export default function Dashboard({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) {	
+	const googlemap = useRef<HTMLDivElement>(null);
+	const mapRef = useRef<google.maps.Map>();
+
+	const markersRef = useRef<[google.maps.Marker] | undefined>();
+
+	const [selectedIndex, setIndex] = useState<undefined | string>();
+	const [filter, setFilter] = useState<Filters>(Filters.all)
+	const [filteredData, setFilteredData] = useState(deviceData)
+
+	const activeLights = useMemo(() => deviceData.filter((data) => data.status.isOn), deviceData)
+	const offlineLights = useMemo(() => deviceData.filter((data) => !data.status.isOn), deviceData)
+
+	useEffect(() => {
+		if (!process.env.NEXT_PUBLIC_MAPS_API_KEY) return
+
+		const loader = new Loader({
+			apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY!,
+			version: 'weekly',
+		});
+
+		loader.load().then(() => {
+			mapRef.current = new google.maps.Map(googlemap.current!, {
+				center: ISB_LAT_LONG,
+				zoom: 12,
+				mapId: '2c331c1a23562b1e',
+			});
+		}).then(() => {
+
+			filteredData.forEach(data => {
+				const marker = new google.maps.Marker({
+					position: data.position,
+					map: mapRef.current,
+					icon: icons[data.status.isOn ? 'on' : 'off'].icon,
+					title: data.status.powerReading,
+
+					// label: data.status.powerReading,
+				})
+				markersRef.current?.push(marker);
+			})
+
+		});
+		/* googlemap.current?.addEventListener('transitionend', ({})=>{
+			console.log({}, 'log');
+		}) */
+		return () => {
+		}
+	}, []);
+
+	const onLocationSelected = (position: typeof ISB_LAT_LONG,ind: number) => {
+		mapRef.current?.setZoom(17.5);
+		mapRef.current?.panTo(filteredData[ind].position);
+		setIndex(`${position.lat}-${position.lng}`);
+		setTimeout(() => {}, 1000);
+	}
+
+	const onFilterSelected = (filterType: Filters) => {
+		setFilter(filterType);
+		const {all, active, offline} = Filters;
+		switch (filterType){
+			case all:
+				setFilteredData(deviceData);
+				break;
+			
+			case active:
+				setFilteredData(activeLights);
+				break;
+			
+			case offline:
+				setFilteredData(offlineLights);
+				break;
+
+			default:
+				break;
+		}
+	}
 
 	return (
 		<AdminLayout title="Overview" user={user}>
 			<main className="w-full h-full">
 				<div className="py-[1px] xs:py-2 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 lg:items-start">
-					<Card title="Total Lamps" value="7"/>
+					<Card title="Total Lamps" value={deviceData.length} active={filter === Filters.all} 
+						onPress={()=> onFilterSelected(Filters.all)}
+					/>
 					
-					<Card title="Active" value="2"/>
+					<Card title="Active" value={activeLights.length} active={filter === Filters.active} 
+						onPress={() => onFilterSelected(Filters.active)}
+					/>
 					
-					<Card title="Offline" value="0"/>
+					<Card title="Offline" value={offlineLights.length} active={filter === Filters.offline} 
+						onPress={() => onFilterSelected(Filters.offline)}
+					/>
 					
-					<Card title="Issues" value="0"/>
+					<Card title="Issues" value="0" 
+
+					/>
 				</div>
 
 				<div className="flex-1 mt-2 bg-white shadow rounded-md">
@@ -42,7 +136,7 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 						<div className="flex flex-col items-stretch drawer-content px-4 pb-3">
 							{/* <label  className="mb-4 ">open menu</label> */}
 							
-							<div className="self-stretch flex flex-col py-1 xs:py-3 px-6 -mx-4 sticky top-0 bg-white z-10 rounded-t-md">
+							<div className="self-stretch flex flex-col py-1 xs:py-3 px-4 -mx-4 sticky top-0 bg-white z-10 rounded-t-md">
 								<div className="label px-0 pb-1">
 									<span className="label-text font-semibold text-18">Devices</span>
 									<label htmlFor="drawer-dashboard" className="lg:hidden hover:bg-gray-200 rounded p-1 text-gray-600 font-mono cursor-pointer grid object-center">
@@ -58,77 +152,22 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 								</div>
 							</div>
 
-							<div className="my-4">
+							{/* Map */}
+							<div className="rounded-lg border overflow-hidden">
+								<div id="map" ref={googlemap} className="aspect-square xs:aspect-video w-full h-full bg-gray-300" />
+							</div>
+
+							{/* <div className="my-4">
 								<HighchartsReact
 									highcharts={Highcharts}
 									options={chartData}
 								/>
-							</div>
+							</div> */}
 
-							<div className="my-4 grid grid-cols-1 xs:grid-cols-2 gap-6">
-								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue hover:shadow-2xl">
-									<div className="card-body p-4 lg:p-6">
-										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
-											Battery Percentage
-										</h4>
-
-										<CircularProgressbar value={80} text={`${80}%`} 
-											strokeWidth={5} styles={buildStyles({
-												pathColor: colors.app_primary, textColor: 'black'
-											})}
-											className="max-h-52 my-2"
-										/>
-									</div>
-								</div>
-								<div className="transition duration-500 group card shadow rounded-md bg-white text-center outline-white hover:outline-blue hover:shadow-2xl">
-									<div className="card-body p-4 lg:p-6">
-										<h4 className="transition duration-500 card-title font-medium text-14 md:text-19 tracking-loose group-hover:text-app_primary">
-											Signal Strength
-										</h4>
-
-										<CircularProgressbar value={60} text={`${60}%`}
-											strokeWidth={5} styles={buildStyles({
-												pathColor: '#A7F7FB', textColor: 'black'
-											})}
-											className="max-h-52 my-2"
-										/>
-									</div>
-								</div>
-							</div>
 
 							<div className="divider opacity-40"></div> 
 
-							<div className="h-full grid sm:grid-cols-2 xs:grid-cols-1 grid-flow-row gap-4">
-								
-								{/* <div className="form-control">
-									<label className="label">
-										<span className="label-text font-sans font-light text-base text-app_light_gray">
-											Water level alert minimum value (in feet):
-										</span>
-									</label>
-									<select className="select select-bordered select-primary select-sm">
-										<option>1</option>
-										<option>2</option>
-										<option>3</option>
-										<option>4</option>
-										<option>5</option>
-									</select>
-								</div>
-								
-								<div className="form-control">
-									<label className="label">
-										<span className="label-text font-sans font-light text-base text-app_light_gray">
-											Water level alert maximum value (in feet):
-										</span>
-									</label>
-									<select className="select select-bordered select-primary select-sm">
-										<option>1</option>
-										<option>2</option>
-										<option>3</option>
-										<option>4</option>
-										<option>5</option>
-									</select>
-								</div> */}
+							<div className="grid sm:grid-cols-2 xs:grid-cols-1 grid-flow-row gap-4">
 								
 								<div className="form-control sm:col-span-2 xs:col-span-1">
 									<label className="label">
@@ -187,12 +226,23 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 										</thead> 
 										<tbody>
 											{
-												tableData.map(({devName, userName},ind)=>(
-													<tr key={`${ind}-${devName}-${userName}`} className="hover:cursor-pointer">
-													{/* <th>1</th> */}
-													<td className="w-full">{devName}</td> 
-													<td >{userName}</td> 
-												</tr>
+												filteredData.map(({ userName, devName, status: { isOn }, position }, ind) => (
+													<tr key={`${ind}-${userName}`} className={`hover:cursor-pointer ${(selectedIndex === `${position.lat}-${position.lng}`) ? 'bg-gray-100' : 'bg-transparent'}`}
+														onClick={() => onLocationSelected(position, ind)}
+													>
+
+														{/* <th>1</th> */}
+
+														<td className="w-full bg-transparent">{devName}</td>
+
+														<td className="bg-transparent">{userName}</td>
+
+														<td className="w-full bg-transparent">
+															<div className={`badge mx-2 text-12 ${isOn ? 'bg-green-600' : 'bg-red-600'} border-none float-right`}>
+																{isOn ? 'ON' : 'OFF'}
+															</div>
+														</td>
+													</tr>
 												))
 											}
 										</tbody>
@@ -210,13 +260,99 @@ export default function Dashboard({ user }: InferGetServerSidePropsType<typeof g
 	)
 }
 
-const tableData = [
-	{devName: 'Device 1', userName: 'User 1'},
-	{devName: 'Device 2', userName: 'User 3'},
-	{devName: 'Device 3', userName: 'User 1'},
-	{devName: 'Device 4', userName: 'User 2'},
-	{devName: 'Device 5', userName: 'User 2'},
-	
+const iconPath = '/svg/'
+
+const icons: Record<string, { icon: string }> = {
+	on: {
+		icon: iconPath + "bulb-on.svg",
+	},
+	off: {
+		icon: iconPath + "bulb-off.svg",
+	},
+};
+
+const deviceData = [
+	{
+		devName: 'Device 1', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: '43', gali: null,
+		},
+		status: {
+			isOn: false, powerReading: '0 Watts'
+		},
+		position: { lat: 33.677973, lng: 73.022232 }
+	},
+	{
+		devName: 'Device 2', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: '43', gali: null,
+		},
+		status: {
+			isOn: true, powerReading: '10 Watts'
+		},
+		position: { lat: 33.678503, lng: 73.023243 }
+	},
+	{
+		devName: 'Device 3', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status: {
+			isOn: true, powerReading: '12 Watts'
+		},
+		position: { lat: 33.675600, lng: 73.024372 }
+	},
+	{
+		devName: 'Device 4', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status: {
+			isOn: true, powerReading: '12 Watts'
+		},
+		position: { lat: 33.675426, lng: 73.024015 }
+	},
+	{
+		devName: 'Device 5', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status: {
+			isOn: true, powerReading: '10 Watts'
+		},
+		position: { lat: 33.675251, lng: 73.023682 }
+	},
+	{
+		devName: 'Device 6', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status: {
+			isOn: true, powerReading: '10 Watts'
+		},
+		position: { lat: 33.675162, lng: 73.023479 }
+	},
+	{
+		devName: 'Device 7', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status: {
+			isOn: false, powerReading: '0 Watts'
+		},
+		position: { lat: 33.674921, lng: 73.023028}
+	},
+	{
+		devName: 'Device 8', userName: 'User 1',
+		location: {
+			sector: 'G-10/4', street: null, gali: '36',
+		},
+		status: {
+			isOn: true, powerReading: '11 Watts'
+		},
+		position: { lat: 33.674749, lng: 73.022727 }
+	},
+
 ]
 
 const dataBaroCorrected: number[] = [3, 4, 3, 5, 4, 10, 12]
@@ -301,7 +437,6 @@ export const getServerSideProps = withIronSessionSsr(function ({
 }) {
 	const user = req.session.user
 	
-
 	if (user === undefined) {
 		res.setHeader('location', '/login')
 		res.statusCode = 302

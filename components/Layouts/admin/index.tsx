@@ -31,7 +31,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 			<div className="flex flex-col items-center drawer-content bg-app_light">
 				{/* <label htmlFor="my-drawer-2" className ="mb-4 btn btn-primary drawer-button lg:hidden">open menu</label> */}
 
-				<header className="flex items-center w-full px-2 py-2 xs:py-4">
+				<header className="flex items-center w-full px-2 pt-2 pb-1">
 					<div className="flex-none flex lg:hidden">
 						<label className="btn btn-square btn-ghost" htmlFor="my-drawer-2">
 							<HamburgerSvg />
@@ -64,7 +64,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 									</a>
 								</Link>
 							</li>
-							<li className={isActiveLink(router, "maps") + linkHoverClasses}>
+							{/* <li className={isActiveLink(router, "maps") + linkHoverClasses}>
 								<Link href="/admin/maps" >
 									<a className="group">
 										<MapsSvg isActive={isActive(router, "maps")} />
@@ -73,7 +73,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children, title, user})=> {
 										</span>
 									</a>
 								</Link>
-							</li>
+							</li> */}
 							<li className={isActiveLink(router, "users") + linkHoverClasses}>
 								<Link href="/admin/users" >
 									<a className="group">

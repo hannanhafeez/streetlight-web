@@ -9,9 +9,9 @@ export default function Users({ user }: InferGetServerSidePropsType<typeof getSe
 
 	return (
 		<AdminLayout title="Users" user={user}>
-			<main className="w-full h-full flex flex-col items-stretch">
+			<main className="w-full h-full">
 				
-				<div className="flex-1 mt-4 bg-white shadow rounded-md">
+				<div className="flex-1 mt-2 mb-1 bg-white shadow rounded-md">
 					<div className="h-full drawer drawer-mobile drawer-end w-full">
 						<input id="drawer-dashboard" type="checkbox" className="drawer-toggle" />
 
